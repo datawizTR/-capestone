@@ -1,0 +1,223 @@
+---
+title: 'Bellabeat Analysis '
+author: "Tim R"
+date: "03/01/2022"
+output:
+  html_document: default
+---
+
+$~$
+
+## Introduction
+
+$~$
+
+### Business Task 
+
+In this case study I am going to analyze fitbit user data to to find ways in which bellabeat can improve its product offerings and increase usage
+
+$~$
+
+### What is bellabeat 
+
+Bellabeat is women focused fitness company which offers a variety of products to improve their overall health.
+
+$~$
+
+## Process 
+
+I will be using R studio for the whole data analysis process as R is more suikted for analyzing big amounts of data compared to excel and offers the opportunity to create visualizations
+
+$~$
+
+The packages I will be using can be found in tidyverse namely
+* ggplot 2 for visualizations
+* readr for importing and reading the csv data sets
+
+$~$
+
+### Data intergrity
+
+* The data is trustworthy because it is licensed by the CCO public domain
+* The negatives however are that the sample group consists only of 30 participants and individual gender is is not revealed
+
+$~$
+
+### Prepare
+
+$~$
+
+### Intstall Packages and datasets
+
+
+#### Firstly we need to install our r packages and load them, weven if we were coding on a script and transferred our code to markdown, we still need to redo the process as `R tends to treat them as two different sessions
+```{r echo=FALSE}
+install.packages("tidyverse", repos="http://cran.us.r-project.org")
+library(tidyverse)
+library(knitr)
+library(markdown)
+```
+
+
+```{r include=FALSE}
+setwd("/Users/tatenda/Downloads/Fitbase")
+
+da<-read_csv("dailyactivity.csv")
+ht<-read_csv("heartrate.csv")
+wl<-read_csv("weightlog.csv")
+sp<-read_csv("sleepDay_merged.csv")
+```
+
+$~$
+
+### Processing and analyzing data
+
+##### We want to make sure that our data has been loaded correctly so it is important to get a glimpse of its layout and compare the different data frames for similarities like identical column names etc.To do that I will use the heead function.
+
+#### Daily activity
+```{r echo=FALSE}
+head(da)
+```
+
+$~$
+
+#### Heart rate
+```{r echo=FALSE}
+head(ht)
+```
+
+$~$
+
+#### Weightlog
+```{r echo=FALSE}
+head(wl)
+```
+
+$~$
+
+#### Amount of sleep in a day
+```{r echo=FALSE}
+head(sp)
+```
+
+$~$
+
+### Summarised Data
+
+##### Once that is done we now get into a deeper analysis and this is where the summary function comes into play as it gives us a rundown of each data frame, which saves us time and the need to compute complex mathematical equations manually. Through the use of the head and summary function we can clearly see that all these data frames have a common ID column which we will later use in this analysis for merging data frames.
+
+$~$
+
+#### Daily Activity
+```{r echo=FALSE}
+summary(da)
+```
+
+##### From this statistical summary, we can see that the average user is getting 13.56 minutes of moderate exercise which equates to  around 100 minutes a week which falls below the required  minimum of 150 minutes of moderate activity, however this as changed when we look at the time spent on very active exercise which averaged 21 minutes and 16 seconds, which amounted to around 148 minutes which is way above the 75 minutes recommended. It is on the total steps taken a day where we see abit of an under performance from the group as the average was 7638 steps, which falls below the recommended 10 000 steps by the CDC The effectiveness of the vigorous activity is seen by the amount of calories burnt on average by thee users which stands at 2305 day, which is above average but still below the minimum required 3000 needed to lose weight, however this shoukd not be taken as a negative as noit all participants need to lose weught as we will see later in this analysis
+
+$~$
+
+#### Heart rate
+```{r echo=FALSE}
+summary(ht)
+```
+
+##### The average heartrate is 77 which falls right in between the desired 50-80 men and 53-83 for women which at a glance would mean that on average our sample group has a healthy heart rate however it is important to note that it is normal for the heartrate to go beyond these boundaries as many triggers can prompt it to either beat faster than normal or much slower such as sudden shock our trauma therefore more analysis would be needed here.
+
+
+$~$
+
+#### Weightlog
+```{r echo=FALSE}
+summary(wl)
+```
+
+##### For this part we will focus on the BMI which stands for body mass index, which is used to calculate whether someone is considered obese or not and the formula is BMI=kg/m2. Our average BMI is 25.19 which is considered overweight as the healthy range is 18.5 to 24.9
+
+
+$~$
+
+#### Amount of sleep in a day
+```{r echo=FALSE}
+summary(sp)
+```
+
+##### According to the national sleep foundation healthy adults from 18years old require at 7 hours of sleep and judging by our sample group the average time sleeping a day is 410 minutes which equals 6.98 hours however if we round this number off it is closer to 7 hours than 6 hours so we can argue that sleep requirements are being met. Equally important is sleep efficiency which is the time spent in bed in total and time spent in total asleep as a fraction of percentage a normal sleep efficiency is considered 85% or higher and our sample percentage is 91.4% which above the minimum.
+
+
+
+$~$
+
+
+
+### Sharing
+
+$~$
+
+```{r echo=FALSE}
+ggplot(data = da)+geom_point(mapping = aes(x=TotalSteps, y=Calories, colour=Id))+geom_smooth(mapping = aes(x=TotalSteps, y=Calories, colour=Id)) + labs(title = "relationship between steps and calories burnt")
+```
+
+We can tell that there is a positive correlation between walking and calories burnt, and this should useful; in encouraging people to spend as much time as they can moving in order to maintain a healthy body
+
+$~$
+
+```{r echo=FALSE}
+ggplot(data=da)+geom_point(mapping = aes(x=VeryActiveMinutes,y=Calories, colour=Id,))+ geom_smooth(mapping = aes(x=VeryActiveMinutes,y=Calories, color=Id, alpha=Id))+labs(title = "relationships between very active minutes and calories burnt")
+```
+
+Just like the amount of steps taken there is a positive correlation between time spent exercising and the amount iof calories burnt during the process
+
+
+$~$
+
+
+```{r echo=FALSE}
+combineddailyactivity_sleep<-merge(da,sp, by="Id")
+
+ggplot(data = combineddailyactivity_sleep)+geom_point(mapping = aes(x=Calories,y=TotalMinutesAsleep,colour=Id)) + geom_smooth(mapping = aes(x=Calories,y=TotalMinutesAsleep, colour=Id))+ labs(title = "relationship between time spent asleep and calories burnt")
+```
+
+The correlation between amount of sleep taken and calories burnt in according to this graph seems to be nonexistent which could mean that other factors are more important for that like diet and exercise
+
+$~$
+
+
+```{r echo=FALSE}
+ggplot(data=combineddailyactivity_sleep)+geom_point(mapping = aes(x=TotalTimeInBed,y=TotalMinutesAsleep,alpha=0.2))+ geom_smooth(mapping=aes(x=TotalTimeInBed, y=TotalMinutesAsleep,alpha=0.2))+ labs(title = "time spent in bed and time spent asleep")
+
+```
+Here we can tell that the more time somones spends in bed the more time they spend sleeping
+
+$~$
+
+
+```{r}
+dawl<-merge(da,wl, by="Id")
+ggplot(data=dawl)+geom_point(mapping = aes(x=VeryActiveMinutes,y=Calories,colour=Id, size=WeightKg))+ geom_smooth(mapping = aes(x=VeryActiveMinutes,y=Calories, colour=Id, size=WeightKg))+ labs(title = "relationship between someones weightand how many calories they can burn", size=40)
+```
+
+This graph shows us that the more someones weighs the more calories they burn per activity compared to people who weigh less than them, this is because a calorie is a unit of energy and the more someone weighs the more energy is required to move their body
+
+
+$~$
+
+## Act
+
+$~$
+
+### Recommendations
+
+
+* By analyzing how users of other competitors products are using them we can see how and where to improve our current offering, one recommendation I would suggest is including an accountability feature in the app, this can be in the form of AI to help push the users to helps reach their daily goals, this would especially helpful in insuring that the users get the needed 10 000 steps a day. 
+
+
+* Another recommendation to improve sleep efficiency is to include a sleep tracker that tells users how well they are sleeping and how to improve sleep quality, a good way to do this would be a tracker that offers users graphical representation of their sleep patterns
+
+
+* Since it is during a pandemic and gyms are closed in some areas in might be important to introduce virtual training sessions to insure that even if people are stuck at home they are still able to maintain a healthy lifestyle and stay motivated. 
+
+
+* These classes are also important in creating a fun workout environment which is less draining during winter seasons as users dont need to step out into the cold to exercise
+
+$~$
